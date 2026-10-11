@@ -20,19 +20,7 @@ stock-screener/
 ├── .gitignore
 └── README.md
 ```
-🚀 Quick Start
-Activate Virtual Environment:
 
-Bash
-source venv/Scripts/activate
-Install Dependencies:
-
-Bash
-pip install yfinance pandas streamlit
-Run Standalone Streamlit App:
-
-Bash
-streamlit run src/app.py
 📊 Valuation Signal Methodology
 The valuation logic applies sector-adjusted thresholds to prevent growth-sector bias (e.g., Technology vs. Traditional sectors):
 
