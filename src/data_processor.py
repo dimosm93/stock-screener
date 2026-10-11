@@ -1,18 +1,14 @@
+import pandas as pd
 from data_fetcher import get_raw_stock_info
 
 def clean_stock_data(raw_info: dict) -> dict:
     """
     Cleans and transforms raw financial data from yfinance into a 
     standardized dictionary containing essential financial metrics.
-    
-    :param raw_info: Raw dictionary returned by yfinance Ticker.info
-    :return: Cleaned dictionary with normalized key names
     """
-    # Guard clause: Return an empty dictionary if raw_info is empty or invalid
     if not raw_info:
         return {}
 
-    # Extract and normalize fundamental financial metrics
     cleaned_data = {
         'symbol': raw_info.get('symbol'),
         'name': raw_info.get('longName') or raw_info.get('shortName') or 'N/A',
@@ -27,17 +23,32 @@ def clean_stock_data(raw_info: dict) -> dict:
     return cleaned_data
 
 
+def create_stock_dataframe(tickers: list) -> pd.DataFrame:
+    """
+    Fetches, cleans, and consolidates financial data for multiple tickers
+    into a  Pandas DataFrame.
+    """
+    processed_list = []
+    
+    for symbol in tickers:
+        raw_data = get_raw_stock_info(symbol)
+        cleaned_data = clean_stock_data(raw_data)
+        
+        
+        if cleaned_data:
+            processed_list.append(cleaned_data)
+            
+    # Convert list of dictionaries into a Pandas DataFrame
+    df = pd.DataFrame(processed_list)
+    return df
+
+
 if __name__ == "__main__":
-    # Test data processing with Microsoft (MSFT)
-    symbol = "MSFT"
-    print(f"--- Fetching & Processing Data for {symbol} ---")
+    # Test multi-stock processing including an invalid ticker
+    test_tickers = ["AAPL", "MSFT", "NVDA", "INVALID_TICKER"]
+    print(f"--- Fetching & Building DataFrame for: {test_tickers} ---")
     
-    # 1. Fetch raw stock data
-    raw_data = get_raw_stock_info(symbol)
+    df_stocks = create_stock_dataframe(test_tickers)
     
-    # 2. Clean and normalize data
-    processed_data = clean_stock_data(raw_data)
-    
-    # 3. Print processed key-value pairs
-    for key, value in processed_data.items():
-        print(f"{key}: {value}")
+    print("\nResulting DataFrame:")
+    print(df_stocks.to_string())
